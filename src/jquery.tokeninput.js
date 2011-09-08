@@ -367,9 +367,12 @@ $.TokenList = function (input, url_or_data, settings) {
         .append(input_box);
 
     // The list to store the dropdown items in
+    var dropdown_parent = $("<div>")
+        .insertAfter(token_list)
+        .css({position: 'relative'});
     var dropdown = $("<div>")
         .addClass(settings.classes.dropdown)
-        .appendTo("body")
+        .appendTo(dropdown_parent)
         .hide();
 
     // Magic element to help us resize the text input
@@ -667,14 +670,36 @@ $.TokenList = function (input, url_or_data, settings) {
     }
 
     function show_dropdown() {
-        dropdown
-            .css({
-                position: "absolute",
-                top: $(token_list).offset().top + $(token_list).outerHeight(),
-                left: $(token_list).offset().left,
-                'z-index': 999
-            })
-            .show();
+        var dropdown_height = $("ul", dropdown).height(),
+            bottom_height_left = $(document).height() - $(token_list).offset().top - $(token_list).outerHeight(),
+            top_height_left = $(token_list).offset().top;
+
+        if (dropdown_height > bottom_height_left && dropdown_height < top_height_left) {
+            // Show dropdown to the top, ergo 'dropup'
+            dropdown
+                .css({
+                    position: "absolute",
+                    bottom: $(token_list).outerHeight(),
+                    top: '',
+                    left: 0,
+                    width: token_list.width()
+                })
+                .addClass('token-input-dropdown-top-facebook')
+                .removeClass('token-input-dropdown-bottom-facebook')
+                .show();
+        } else {
+            dropdown
+                .css({
+                    position: "absolute",
+                    top: 0,
+                    bottom: '',
+                    left: 0,
+                    width: token_list.width()
+                })
+                .removeClass('token-input-dropdown-top-facebook')
+                .addClass('token-input-dropdown-bottom-facebook')
+                .show();
+        }
     }
 
     function show_dropdown_searching () {
